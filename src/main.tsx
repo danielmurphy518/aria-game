@@ -5,6 +5,7 @@ import "./index.css";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
 import { Authenticator } from '@aws-amplify/ui-react';
+import { BrowserRouter } from "react-router-dom";
 
 import '@aws-amplify/ui-react/styles.css';
 
@@ -13,8 +14,10 @@ Amplify.configure(outputs);
 ReactDOM.createRoot(document.getElementById("root")!).render(
   
   <React.StrictMode>
-    <Authenticator>
-      <App />
-    </Authenticator>
+    <BrowserRouter>
+      <Authenticator>
+        <App />
+      </Authenticator>
+    </BrowserRouter>
   </React.StrictMode>
 );
