@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { useAuthenticator } from '@aws-amplify/ui-react';
-import { Routes, Route, Link, useParams, useNavigate } from "react-router-dom";
+import { Routes, Route, Link, useParams, useNavigate, } from "react-router-dom";
 import { generateClient } from "aws-amplify/data";
+import { fetchUserAttributes } from 'aws-amplify/auth';
 
 const client = generateClient<Schema>();
 
@@ -76,16 +77,30 @@ const Users = () => {
 
 function App() {
   const { user, signOut } = useAuthenticator();
+  const [userAttributes, setUserAttributes] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const fetchAttributes = async () => {
+      try {
+        const attributes = await fetchUserAttributes();
+        setUserAttributes(attributes);
+      } catch (e) {
+        console.log('Error fetching user attributes', e);
+      }
+    };
+
+    fetchAttributes();
+  }, []);
 
   return (
     <main>
-      <h1>Welcome, {user?.signInDetails?.loginId}</h1>
+      <h1>Welcome, {userAttributes?.given_name}</h1>
 
       <nav>
         <Link to="/albums">Albums</Link> | <Link to="/users">Users</Link>
       </nav>
 
-      <hr />
+
 
       <Routes>
         <Route path="/albums" element={<Albums />} />
@@ -95,13 +110,6 @@ function App() {
         <Route path="/" element={<Albums />} />
       </Routes>
 
-      <div>
-        🥳 App successfully running.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
       <button onClick={signOut}>Sign out</button>
     </main>
   );
